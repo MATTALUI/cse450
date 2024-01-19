@@ -1,0 +1,46 @@
+* {
+    --main: darkslategray;
+    --light: #eeeeee;
+    --dark: #111111;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background-color: var(--main);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--light);
+    font-weight: bold;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 3rem;
+    margin: 0;
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+p, a {
+    padding: 2rem;
+}
+
+ol {
+    padding-left: 4rem;
+}
+
+p,
+a {
+    font-size: 1.25rem;
+}
+
+a {
+    color: var(--light);
+    cursor: pointer;
+}
+
+ol a {
+    padding: 0;
+}
