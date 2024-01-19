@@ -13,3 +13,7 @@ seaborn = "*"
 
 [requires]
 python_version = "3.9"
+
+[scripts]
+pokemonreport="python ./scripts/pokemon.py"
+kdtree="python ./scripts/kdtreeexplore.py"

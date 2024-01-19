@@ -91,3 +91,69 @@ class BaseReport:
                 output_path = os.path.join(full_path, output_name)
                 plt.savefig(output_path)
                 plt.close()
+
+class KDTreeLeaf:
+    def __init__(self):
+        self.id = None
+        self.feature = None
+        self.instance = None
+
+        self.left = None
+        self.right = None
+
+    def __str__(self):
+        return f"#{self.id} {self.feature} {self.value}"
+    
+    @property
+    def value(self):
+        return self.instance.get(self.feature)
+class KDTree:
+    def __init__(
+        self,
+        dataframe,
+        features,
+        identifying_feature="id"
+    ):
+        self.dataframe = dataframe
+        self.features = features
+        self.identifying_feature = identifying_feature
+        self.root = self._build_node(self.dataframe, 0)
+
+    def _build_node(self, data, feature_index):
+        data_length = len(data.index)
+        if data_length == 0:
+            return None
+        # Calculate feature and next feature
+        feature = self.features[feature_index]
+        next_feature_index = feature_index + 1
+        if next_feature_index == len(self.features):
+            next_feature_index = 0
+        # To get the instance we care about we take the lowest value for the
+        # current feature on the right side. This is because the right side can
+        # actually include the median
+        median = data[feature].median()
+        right_set = data[data[feature] >= median].sort_values(feature)
+        # Build the node
+        node = KDTreeLeaf()
+        node_instance_row = right_set.iloc[0]
+        node.id = node_instance_row.get(self.identifying_feature)
+        node.feature = feature
+        node.instance = node_instance_row
+        # recursively add the children
+        if data_length > 1:
+            right_set = right_set.iloc[1:, :]
+            left_set = data[data[feature] < median]
+            node.left = self._build_node(left_set, next_feature_index)
+            node.right = self._build_node(right_set, next_feature_index)
+        return node
+    
+    def _display_tree_text(self, node, depth):
+        pad = "  " * depth
+        print(pad + str(node.id) + "=====")
+        if node.left is not None:
+            self._display_tree_text(node.left, depth + 1)
+        if node.right is not None:
+            self._display_tree_text(node.right, depth + 1)
+    
+    def display_text(self):
+        self._display_tree_text(self.root, 0)
