@@ -154,6 +154,14 @@ class KDTree:
             self._display_tree_text(node.left, depth + 1)
         if node.right is not None:
             self._display_tree_text(node.right, depth + 1)
+
+    def _get_depth_first_nodes(self, node):
+        if node is None:
+            return []
+        return [node.id] + self._get_depth_first_nodes(node.left) + self._get_depth_first_nodes(node.right)
+
+    def to_depth_first_array(self):
+        return self._get_depth_first_nodes(self.root)
     
     def display_text(self):
         self._display_tree_text(self.root, 0)
