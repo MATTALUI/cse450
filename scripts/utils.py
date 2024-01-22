@@ -59,7 +59,7 @@ class BaseReport:
         self.categorical_quality_report = pd.DataFrame({
             "name": self.categorical_features,
             "count": self.dataframe[self.categorical_features].count(),
-            "% missing": self.dataframe[self.categorical_features].isnull().sum() / self.dataframe["name"].count() * 100,
+            "% missing": self.dataframe[self.categorical_features].isnull().sum() / len(self.dataframe) * 100,
             "cardinality": self.dataframe[self.categorical_features].nunique(),
             "mode": [self.dataframe[f].mode()[0] for f in self.categorical_features],
         })
