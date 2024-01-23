@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import shutil
 import matplotlib.pyplot as plt
+import math
 
 plt.switch_backend('Agg') # Comment this in when we're only writing to disk and never displaying
 
@@ -13,6 +14,29 @@ def print_sep(statement, label="", expand=False):
     else:
         print(statement)
     print(f"{label}=================================")
+
+def calculate_entropy(dataframe, target):
+    total_records = len(dataframe)
+    sigma_total = 0
+    # There a more pd way to do this than iterating?
+    for level in dataframe[target].unique():
+        level_records = len(dataframe[dataframe[target] == level])
+        p = level_records / total_records
+        sigma_total += p * math.log2(p)
+    return -sigma_total
+H = calculate_entropy
+
+def calculate_information_remaining(dataframe, feature, target):
+    sigma_total = 0
+    for level in dataframe[feature].unique():
+        subset = dataframe[dataframe[feature] == level]
+        weight = len(subset) / len(dataframe)
+        sigma_total += weight * H(subset, target)
+    return sigma_total
+REM = calculate_information_remaining
+
+def calculate_information_gain(dataframe, feature, target):
+    return H(dataframe, target) - REM(dataframe, feature, target)
 
 class BaseReport:
     def __init__(
