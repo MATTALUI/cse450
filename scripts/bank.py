@@ -1,5 +1,8 @@
 import pandas as pd
 import utils
+from sklearn.model_selection import train_test_split
+from sklearn import tree
+from sklearn.metrics import accuracy_score
 
 # Load the data
 bank_data = pd.read_csv("./datasets/bank.csv")
@@ -8,7 +11,7 @@ bank_data = pd.read_csv("./datasets/bank.csv")
 # Remap some of the names to make data easier to work with
 class Cols:
     age = "age"
-    marital = "marital status"
+    marital = "marital_status"
     education = "education"
     default = "has_credit_in_default"
     housing = "has_housing_loan"
@@ -48,8 +51,35 @@ name_map = {
     "y": Cols.subscribed
 }
 bank_data = bank_data.rename(columns=name_map)
-print(bank_data.head())
+# print(bank_data.head())
 
 # Base Report for getting to know the data
-base_report = utils.BaseReport(bank_data)
+# base_report = utils.BaseReport(bank_data)
+# for col in base_report.categorical_features:
+#     if "unknown" in base_report.dataframe[col].unique():
+#         print(
+#             col,
+#             len(base_report.dataframe[base_report.dataframe[col] == "unknown"]),
+#             len(base_report.dataframe),
+#             len(base_report.dataframe[base_report.dataframe[col] == "unknown"]) / len(base_report.dataframe) * 100
+#         )
+# base_report.dataframe.replace(to_replace="services", value=None, inplace=True)
 # base_report.display()
+
+
+
+features_we_care_about = [Cols.default, Cols.housing, Cols.loan]
+targets = [Cols.subscribed]
+
+x = pd.get_dummies(bank_data[features_we_care_about], dtype=int)
+y = pd.get_dummies(bank_data[targets], dtype=int)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.2)
+
+# print(x_train.head())
+
+classifier = tree.DecisionTreeClassifier()
+classifier = classifier.fit(x_train, y_train)
+
+predictions = classifier.predict(x_test)
+score = accuracy_score(y_test, predictions)
+print(score)
