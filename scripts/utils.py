@@ -189,3 +189,16 @@ class KDTree:
     
     def display_text(self):
         self._display_tree_text(self.root, 0)
+
+class ID3Tree:
+    def __init__(
+        self,
+        dataframe,
+        target,
+        features,
+        identifying_feature="id"
+    ):
+        self.dataframe = dataframe
+        self.target = target
+        self.features = features
+        self.identifying_feature = identifying_feature
