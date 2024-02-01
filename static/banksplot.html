@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/main.css">
+    <title>CSE 450 | Bank Splot</title>
+    <style>
+        #scroller {
+            overflow: auto;
+            margin: 2rem;
+        }
+
+        #grid {
+            display: grid;
+            gap: 5px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        #grid>img {
+            max-width: 300px;
+            border-radius: 3px;
+        }
+    </style>
+    <script defer>
+        (async () => {
+            const res = await fetch('/api/bank/splot');
+            const splotImages = await res.json();
+            const grid = document.querySelector("#grid");
+            grid.style.gridTemplateColumns =
+                `repeat(${Object.keys(splotImages).length}, 1fr)`;
+            Object.entries(splotImages).forEach(([rowName, charts]) => {
+                charts.forEach(chart => {
+                    const [[colName, url]] = Object.entries(chart);
+                    if (rowName === colName) {
+                        const label = document.createElement('span');
+                        label.innerHTML = colName;
+
+                        grid.appendChild(label);
+                    } else {
+                        const img = document.createElement('img');
+                        img.src = url;
+                        grid.appendChild(img);
+                    }
+
+                });
+            });
+            console.log('all done');
+        })();
+    </script>
+</head>
+
+<body>
+    <h1>CSE 450</h1>
+    <p>Splot overview of bank dataset</p>
+    <a href="/">Home</a>
+    <div id="scroller">
+        <div id="grid">
+
+        </div>
+    </div>
+</body>
+
+</html>

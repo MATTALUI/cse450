@@ -42,14 +42,14 @@ class BaseReport:
     def __init__(
         self,
         dataframe,
-        categorical_features = [],
-        continuous_features = [],
-        skip_features = [],
+        categorical_features = None,
+        continuous_features = None,
+        skip_features = None,
     ):
         self.dataframe = dataframe
-        self.categorical_features = categorical_features
-        self.continuous_features = continuous_features
-        self.skip_features = skip_features
+        self.categorical_features = categorical_features if categorical_features is not None else []
+        self.continuous_features = continuous_features if continuous_features is not None else []
+        self.skip_features = skip_features if skip_features is not None else []
         self._calculate_features()
         self._calculate_data_quality_report()
 

@@ -11,6 +11,10 @@ poke_report = BaseReport(
     pokemon,
     skip_features=["number", "generation"],
 )
+bank = pd.read_csv("./datasets/bank.csv")
+bank_report = BaseReport(
+    bank,
+)
 
 app = Flask(__name__)
 
@@ -35,6 +39,20 @@ def get_pokemon_splot_data():
         row = []
         for y_label in poke_report.continuous_features:
             img_path = os.path.join("/tmp/pokemon/splot", f"SPLOT-{x_label}-{y_label}.png")
+            row.append({ y_label: img_path })
+        splot_images[x_label] = row
+        row = []
+    return json.dumps(splot_images)
+
+@app.get("/api/bank/splot/")
+def get_bank_splot_data():
+    if not os.path.exists("./static/tmp/bank/splot"):
+        bank_report.write_splot("../static/tmp/bank/splot") # from other tmp
+    splot_images = {}
+    for x_label in bank_report.continuous_features:
+        row = []
+        for y_label in bank_report.continuous_features:
+            img_path = os.path.join("/tmp/bank/splot", f"SPLOT-{x_label}-{y_label}.png")
             row.append({ y_label: img_path })
         splot_images[x_label] = row
         row = []

@@ -1,5 +1,6 @@
 import pandas as pd
 import utils
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn import tree
 from sklearn.metrics import accuracy_score
@@ -72,14 +73,13 @@ features_we_care_about = [Cols.default, Cols.housing, Cols.loan]
 targets = [Cols.subscribed]
 
 x = pd.get_dummies(bank_data[features_we_care_about], dtype=int)
-y = pd.get_dummies(bank_data[targets], dtype=int)
+y = bank_data[targets].map(lambda t: { "yes": 1, "no": 0}[t])
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.2)
-
-# print(x_train.head())
 
 classifier = tree.DecisionTreeClassifier()
 classifier = classifier.fit(x_train, y_train)
 
 predictions = classifier.predict(x_test)
 score = accuracy_score(y_test, predictions)
+print(predictions)
 print(score)
