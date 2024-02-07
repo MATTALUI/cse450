@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/main.css">
+  <title>CSE 450 | Mattasets</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td,
+    th {
+      padding: 0.125rem 0.25rem;
+    }
+
+    tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .clickable {
+      cursor: pointer;
+    }
+
+    li.clickable:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    body>div {
+      padding-left: 2rem;
+      max-width: 100%;
+      overflow: auto;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      border-top: 1px solid rgba(255, 255, 255, 0.25);
+      padding-bottom: 1rem;
+    }
+
+    #scroller {
+      overflow: auto;
+      margin: 2rem;
+    }
+
+    #grid {
+      display: grid;
+      gap: 5px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    #grid>img {
+      max-width: 300px;
+      border-radius: 3px;
+    }
+  </style>
+  <script defer>
+    const fetchfeatures = async (event) => {
+      const setName = event.target.innerHTML;
+      const res = await fetch(`/api/datasets/${setName}/features`);
+      const features = await res.json();
+      document.querySelector('#target').innerHTML = "";
+      features.forEach(feature => {
+        const option = document.createElement('option');
+        option.value = feature;
+        option.innerHTML = feature;
+        document.querySelector('#target').appendChild(option);
+      });
+    }
+
+    const getHead = async (event) => { // LOL
+      const setName = event.target.innerHTML;
+      const res = await fetch(`/api/datasets/${setName}/head`);
+      const _head = await res.json();
+      const head = JSON.parse(_head); // Not sure why awaitnig the JSON doesnt do this?
+      document.querySelector("#head").innerHTML = "";
+
+      const table = document.createElement("table");
+      document.querySelector("#head").appendChild(table);
+
+      const thead = document.createElement('thead');
+      table.appendChild(thead)
+      const headRow = document.createElement('tr');
+      thead.appendChild(headRow);
+      const columns = Object.keys(head);
+      columns.forEach(col => {
+        const th = document.createElement('th');
+        headRow.appendChild(th);
+        th.innerHTML = col;
+      });
+      const entryLength = Object.keys(head[columns[0]]).length;
+      const tbody = document.createElement("tbody");
+      table.appendChild(tbody);
+      for (let i = 0; i < entryLength; i++) {
+        const tr = document.createElement("tr");
+        tbody.appendChild(tr);
+
+        columns.forEach(col => {
+          const td = document.createElement('td');
+          tr.appendChild(td);
+          td.innerHTML = head[col][i.toString()];
+        });
+      }
+    }
+
+    const changeDataset = (event) => Promise.all([
+      fetchfeatures(event),
+      getHead(event), // LOL
+    ]);
+
+    (async () => {
+      const res = await fetch('/api/datasets');
+      const datasets = await res.json();
+      datasets.forEach((set) => {
+        const li = document.createElement("li");
+        li.innerHTML = set;
+        li.classList.add("clickable");
+        li.addEventListener("click", changeDataset);
+        document.querySelector("#datasets").appendChild(li);
+      });
+    })();
+  </script>
+</head>
+
+<body>
+  <h1>CSE 450</h1>
+  <a href="/">Home</a>
+  <div>
+    <h2>Datasets</h2>
+  </div>
+
+  <ul id="datasets">
+  </ul>
+  <div>
+    <h2>Target</h2>
+    <select id="target"></select>
+  </div>
+  <div>
+    <h2>Head</h2>
+    <div id="head"></div>
+  </div>
+
+</body>
+
+</html>

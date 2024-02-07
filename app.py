@@ -57,3 +57,24 @@ def get_bank_splot_data():
         splot_images[x_label] = row
         row = []
     return json.dumps(splot_images)
+
+@app.get("/api/datasets")
+def get_datasets():
+    ds = [f.split("/")[2].split(".")[0] for f in glob.glob("./datasets/*.csv")]
+
+    return json.dumps(ds)
+
+@app.get("/api/datasets/<set_name>/features")
+def get_features(set_name):
+    features = []
+    df = pd.read_csv(f"./datasets/{set_name}.csv")
+    for col in df.columns:
+        features.append(col)
+    print(features)
+    return json.dumps(features)
+
+@app.get("/api/datasets/<set_name>/head")
+def get_head(set_name):
+    df = pd.read_csv(f"./datasets/{set_name}.csv")
+
+    return json.dumps(df.head().to_json())
