@@ -78,3 +78,13 @@ def get_head(set_name):
     df = pd.read_csv(f"./datasets/{set_name}.csv")
 
     return json.dumps(df.head().to_json())
+
+@app.get("/api/datasets/<set_name>/dqr")
+def get_dqr(set_name):
+    df = pd.read_csv(f"./datasets/{set_name}.csv")
+    br = BaseReport(df)
+
+    return json.dumps({
+        "continuous": br.continuouse_quality_report.to_json(),
+        "categorical": br.categorical_quality_report.to_json(),
+    })

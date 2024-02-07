@@ -17,24 +17,32 @@
     }
 
     tr {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      border-bottom: 1px solid rgba(238, 238, 238, 0.25);
     }
 
     .clickable {
       cursor: pointer;
     }
 
-    li.clickable:hover {
-      background-color: rgba(255, 255, 255, 0.25);
+    li.clickable:hover, tr:hover {
+      background-color: rgba(238, 238, 238, 0.25);
     }
 
     body>div {
       padding-left: 2rem;
       max-width: 100%;
       overflow: auto;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-      border-top: 1px solid rgba(255, 255, 255, 0.25);
+      border-bottom: 1px solid rgba(238, 238, 238, 0.25);
+      border-top: 1px solid rgba(238, 238, 238, 0.25);
       padding-bottom: 1rem;
+    }
+
+    thead {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    [id^=dqr] {
+      margin-bottom: 1rem;
     }
 
     #scroller {
@@ -55,6 +63,36 @@
     }
   </style>
   <script defer>
+    const buildDataframeTable = (frame) => {
+      const table = document.createElement("table");
+
+      const thead = document.createElement('thead');
+      table.appendChild(thead)
+      const headRow = document.createElement('tr');
+      thead.appendChild(headRow);
+      const columns = Object.keys(frame);
+      columns.forEach(col => {
+        const th = document.createElement('th');
+        headRow.appendChild(th);
+        th.innerHTML = col;
+      });
+      const indices = Object.keys(frame[columns[0]]);
+      const tbody = document.createElement("tbody");
+      table.appendChild(tbody);
+      indices.forEach(index => {
+        const tr = document.createElement("tr");
+        tbody.appendChild(tr);
+
+        columns.forEach(col => {
+          const td = document.createElement('td');
+          tr.appendChild(td);
+          td.innerHTML = frame[col][index];
+        });
+      });
+
+      return table;
+    }
+
     const fetchfeatures = async (event) => {
       const setName = event.target.innerHTML;
       const res = await fetch(`/api/datasets/${setName}/features`);
@@ -73,39 +111,24 @@
       const res = await fetch(`/api/datasets/${setName}/head`);
       const _head = await res.json();
       const head = JSON.parse(_head); // Not sure why awaitnig the JSON doesnt do this?
-      document.querySelector("#head").innerHTML = "";
+      document.querySelector("#head").replaceChildren(buildDataframeTable(head));
+    }
 
-      const table = document.createElement("table");
-      document.querySelector("#head").appendChild(table);
+    const getDQR = async (event) => {
+      const setName = event.target.innerHTML;
+      const res = await fetch(`/api/datasets/${setName}/dqr`);
+      const dqr = await res.json();
+      dqr.continuous = JSON.parse(dqr.continuous);
+      dqr.categorical = JSON.parse(dqr.categorical);
 
-      const thead = document.createElement('thead');
-      table.appendChild(thead)
-      const headRow = document.createElement('tr');
-      thead.appendChild(headRow);
-      const columns = Object.keys(head);
-      columns.forEach(col => {
-        const th = document.createElement('th');
-        headRow.appendChild(th);
-        th.innerHTML = col;
-      });
-      const entryLength = Object.keys(head[columns[0]]).length;
-      const tbody = document.createElement("tbody");
-      table.appendChild(tbody);
-      for (let i = 0; i < entryLength; i++) {
-        const tr = document.createElement("tr");
-        tbody.appendChild(tr);
-
-        columns.forEach(col => {
-          const td = document.createElement('td');
-          tr.appendChild(td);
-          td.innerHTML = head[col][i.toString()];
-        });
-      }
+      document.querySelector("#dqr-continuous").replaceChildren(buildDataframeTable(dqr.continuous));
+      document.querySelector("#dqr-categorical").replaceChildren(buildDataframeTable(dqr.categorical));
     }
 
     const changeDataset = (event) => Promise.all([
       fetchfeatures(event),
       getHead(event), // LOL
+      getDQR(event),
     ]);
 
     (async () => {
@@ -138,6 +161,11 @@
   <div>
     <h2>Head</h2>
     <div id="head"></div>
+  </div>
+  <div>
+    <h2>Data Quality Report</h2>
+    <div id="dqr-continuous"></div>
+    <div id="dqr-categorical"></div>
   </div>
 
 </body>
