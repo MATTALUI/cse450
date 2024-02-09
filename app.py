@@ -70,7 +70,6 @@ def get_features(set_name):
     df = pd.read_csv(f"./datasets/{set_name}.csv")
     for col in df.columns:
         features.append(col)
-    print(features)
     return json.dumps(features)
 
 @app.get("/api/datasets/<set_name>/head")
