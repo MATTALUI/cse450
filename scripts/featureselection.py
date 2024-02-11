@@ -31,9 +31,10 @@ normalized_columns = [
 # plt.show()
 
 scaler = MinMaxScaler()
-
-housing["has_been_renovated"] = housing["yr_renovated"].map(lambda v: 1 if v > 0 else v)
-x = housing.drop(ignored_features, axis=1)
+x=housing
+# housing["has_been_renovated"] = housing["yr_renovated"].map(lambda v: 1 if v > 0 else v)
+x["years_since_renovation"] = datetime.today().year - x[["yr_renovated", "yr_built"]].max(axis=1)
+x = x.drop(ignored_features, axis=1)
 # bins = 100
 # x["lat"] = pd.cut(x["lat"], bins=bins, labels=range(bins))
 # x["long"] = pd.cut(x["long"], bins=bins, labels=range(bins))
@@ -41,14 +42,13 @@ x = housing.drop(ignored_features, axis=1)
 # x["date"] = 
 # .strptime('20150423T000000','%Y%m%dT%H%M%S%f').timestamp()
 y = housing[target]
-# print(x.head(25))
 
 ################################################################################
 # BASE CASE                                                                    #
 ################################################################################
 run_count = 10
 scores = []
-known_best = 0.8793779043184102 #R2 value to beat.
+known_best = 0.8800140509386003 #R2 value to beat.
 for i in range(run_count):
     seed= 69 * (i + 1)
     # Split Data
