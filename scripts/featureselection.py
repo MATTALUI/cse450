@@ -48,14 +48,14 @@ y = housing[target]
 ################################################################################
 run_count = 10
 scores = []
-known_best = 0.8800140509386003 #R2 value to beat.
+known_best = 0.8850304850807225 #R2 value to beat.
 for i in range(run_count):
     seed= 69 * (i + 1)
     # Split Data
     x_train, x_test, y_train, y_test = train_test_split(
         x,
         y,
-        test_size=0.3,
+        test_size=0.2,
         shuffle=True,
         random_state=seed
     )
