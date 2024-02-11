@@ -27,11 +27,16 @@ normalized_columns = [
     "sqft_living",
     "sqft_lot",
 ]
+# plt.scatter(x=housing['long'], y=housing['lat'])
+# plt.show()
 
 scaler = MinMaxScaler()
 
 housing["has_been_renovated"] = housing["yr_renovated"].map(lambda v: 1 if v > 0 else v)
 x = housing.drop(ignored_features, axis=1)
+# bins = 100
+# x["lat"] = pd.cut(x["lat"], bins=bins, labels=range(bins))
+# x["long"] = pd.cut(x["long"], bins=bins, labels=range(bins))
 # x[normalized_columns] = scaler.fit_transform(x[normalized_columns])
 # x["date"] = 
 # .strptime('20150423T000000','%Y%m%dT%H%M%S%f').timestamp()
@@ -43,6 +48,7 @@ y = housing[target]
 ################################################################################
 run_count = 10
 scores = []
+known_best = 0.8793779043184102 #R2 value to beat.
 for i in range(run_count):
     seed= 69 * (i + 1)
     # Split Data
@@ -62,10 +68,17 @@ for i in range(run_count):
     # Evaluate the model
     score = r2_score(y_test, predictions)
     scores.append(score)
+average_score = np.average(scores)
 print("Base Case")
-print("score: ", scores)
-print("average: ", np.average(scores)) # 0.8793779043184102
-print("Improved: ", np.average(scores) > 0.8793779043184102) #R2 value to beat. You've done better when this is true
+print("Score: ", average_score)
+print("High Score: ", known_best)
+if average_score > known_best:
+    print("YOU IMPROVED IT!")
+if average_score < known_best:
+    print("You made it worse")
+if average_score == known_best:
+    print("No change")
+
 
 ################################################################################
 # VARIANCE THRESHOLD                                                           #
