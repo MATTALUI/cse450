@@ -9,7 +9,6 @@ from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 
 housing = pd.read_csv("./datasets/housing.csv")
-# print(housing.head())
 target="price"
 ignored_features = [
     target, #the target
@@ -27,20 +26,16 @@ normalized_columns = [
     "sqft_living",
     "sqft_lot",
 ]
-# plt.scatter(x=housing['long'], y=housing['lat'])
-# plt.show()
 
 scaler = MinMaxScaler()
-x=housing
-# housing["has_been_renovated"] = housing["yr_renovated"].map(lambda v: 1 if v > 0 else v)
-x["years_since_renovation"] = datetime.today().year - x[["yr_renovated", "yr_built"]].max(axis=1)
-x = x.drop(ignored_features, axis=1)
-# bins = 100
-# x["lat"] = pd.cut(x["lat"], bins=bins, labels=range(bins))
-# x["long"] = pd.cut(x["long"], bins=bins, labels=range(bins))
-# x[normalized_columns] = scaler.fit_transform(x[normalized_columns])
-# x["date"] = 
-# .strptime('20150423T000000','%Y%m%dT%H%M%S%f').timestamp()
+housing["date"] = pd.to_datetime(housing["date"])
+housing=housing.sort_values('date')
+housing=housing.drop_duplicates("id", keep="last")
+housing=housing.sort_index() # Maintains ATE for our experiments
+housing["years_since_renovation"] = datetime.today().year - housing[["yr_renovated", "yr_built"]].max(axis=1)
+housing["time_on_market"] = housing["date"].map(lambda d: datetime.today().year - d.year)
+
+x = housing.drop(ignored_features, axis=1)
 y = housing[target]
 
 ################################################################################
@@ -48,7 +43,7 @@ y = housing[target]
 ################################################################################
 run_count = 10
 scores = []
-known_best = 0.8850304850807225 #R2 value to beat.
+known_best = 0.8780341558471283 #R2 value to beat.
 for i in range(run_count):
     seed= 69 * (i + 1)
     # Split Data
