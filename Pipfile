@@ -9,6 +9,8 @@ pandas = "*"
 matplotlib = "*"
 seaborn = "*"
 scikit-learn = "*"
+tensorflow = "*"
+numpy = "*"
 
 [dev-packages]
 
@@ -25,3 +27,4 @@ bank="python ./scripts/bank.py"
 featureselection="python ./scripts/featureselection.py"
 kml="python ./scripts/kml.py"
 pipeline="python ./scripts/pipeline.py"
+words="python ./scripts/words.py"
